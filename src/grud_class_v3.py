@@ -365,7 +365,7 @@ if __name__ == "__main__":
     parser.add_argument("--lrd", type=int, default=10, help="Learning rate decay")
     parser.add_argument("--n_epochs", type=int, default=70, help="Number of epochs")
     parser.add_argument("--n_layers", type=int, default=49, help="Number of epochs")
-    parser.add_argument("--dropout", type=int, default=0, help="Number of epochs")
+    parser.add_argument("--dropout", type=float, default=0, help="Number of epochs")
 
     args = parser.parse_args()
 
