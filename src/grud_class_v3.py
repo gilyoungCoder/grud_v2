@@ -75,9 +75,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 
-def main(learning_rate, learning_rate_decay, n_epochs):
+def main(learning_rate, learning_rate_decay, n_epochs, n_layers):
     # def df_to_x_m_d(df, inputdict, mean, std, size, id_posistion, split):
-    size = 49 # steps ~ from the paper
+    size = n_layers # steps ~ from the paper
     id_posistion = 37
     input_length = 33 # input variables ~ from the paper
     
@@ -142,7 +142,7 @@ def main(learning_rate, learning_rate_decay, n_epochs):
     input_size = 33 # num of variables base on the paper
     hidden_size = 33 # same as inputsize
     output_size = 1
-    num_layers = 49 # num of step or layers base on the paper
+    num_layers = n_layers # num of step or layers base on the paper
     print("checkpoint")
     #dropout_type : Moon, Gal, mloss
     model = GRUD(input_size = input_size, hidden_size= hidden_size, output_size=output_size, dropout=0, dropout_type='mloss', x_mean=x_mean, num_layers=num_layers, device = device)
@@ -365,8 +365,9 @@ if __name__ == "__main__":
     parser.add_argument("--lr", type=float, default=0.01, help="Learning rate")
     parser.add_argument("--lrd", type=int, default=10, help="Learning rate decay")
     parser.add_argument("--n_epochs", type=int, default=70, help="Number of epochs")
+    parser.add_argument("--n_layers", type=int, default=49, help="Number of epochs")
 
     args = parser.parse_args()
 
     # main 함수에 인수 전달
-    main(args.lr, args.lrd, args.n_epochs)
+    main(args.lr, args.lrd, args.n_epochs, args.n_layers)
