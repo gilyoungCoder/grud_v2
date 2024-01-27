@@ -99,10 +99,10 @@ class GRUD(torch.nn.Module):
         for name, param in zip(param_names, layer_params):
             setattr(self, name, param)
         self._all_weights.append(param_names)
-
+        
+        self.to(self.device)
         # self.flatten_parameters()
         self.reset_parameters()
-        self.to(self.device)
         
     def flatten_parameters(self):
         """
@@ -113,7 +113,6 @@ class GRUD(torch.nn.Module):
         any_param = next(self.parameters()).data
         if not any_param.is_cuda or not torch.backends.cudnn.is_acceptable(any_param):
             return
-
         # If any parameters alias, we fall back to the slower, copying code path. This is
         # a sufficient check, because overlapping parameter buffers that don't completely
         # alias would break the assumptions of the uniqueness check in
@@ -131,11 +130,11 @@ class GRUD(torch.nn.Module):
             with torch.no_grad():
                 # NB: this is an INPLACE function on all_weights, that's why the
                 # no_grad() is necessary.
-                # self.num_layers를 정확한 인자로 전달
                 torch._cudnn_rnn_flatten_weight(
-                    all_weights, (4 if self.bias else 2),
-                    self.input_size, 0, self.hidden_size, 0, self.num_layers,
+                    all_weights, 4,
+                    self.input_size, 0, self.hidden_size, self.num_layers, self.num_layers,
                     self.batch_first, bool(self.bidirectional))
+
 
     def _apply(self, fn):
         ret = super()._apply(fn)
@@ -144,11 +143,11 @@ class GRUD(torch.nn.Module):
 
     def reset_parameters(self):
         stdv = 1.0 / math.sqrt(self.hidden_size)
-        # for weight in self.parameters():
-        #     torch.nn.init.uniform_(weight, -stdv, stdv)
-        for name in self._all_weights[0]:
-            param = getattr(self, name)
-            torch.nn.init.uniform_(param, -stdv, stdv)
+        for weight in self.parameters():
+            torch.nn.init.uniform_(weight, -stdv, stdv)
+        # for name in self._all_weights[0]:
+        #     param = getattr(self, name)
+        #     torch.nn.init.uniform_(param, -stdv, stdv)
 
     def check_forward_args(self, input, hidden, batch_sizes):
         is_input_packed = batch_sizes is not None
@@ -297,7 +296,7 @@ class GRUD(torch.nn.Module):
             # gamma_h = torch.exp(-torch.max(self.zeros, (w_dg_h * d + b_dg_h)))
 
             #(5)
-            x = m * x + (1 - m) * (gamma_x * x+ (1 - gamma_x) * self.x_mean)
+            x = m * x + (1 - m) * (gamma_x * last_observed_x+ (1 - gamma_x) * self.x_mean)
 
             #(6)
             if self.dropout == 0:
