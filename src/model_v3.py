@@ -296,8 +296,8 @@ class GRUD(torch.nn.Module):
             # gamma_h = torch.exp(-torch.max(self.zeros, (w_dg_h * d + b_dg_h)))
 
             #(5)
-            # x = m * x + (1 - m) * (gamma_x * last_observed_x+ (1 - gamma_x) * self.x_mean)
-            x = m * x + (1 - m) * (gamma_x * x+ (1 - gamma_x) * self.x_mean)
+            x = m * x + (1 - m) * (gamma_x * last_observed_x+ (1 - gamma_x) * self.x_mean)
+            # x = m * x + (1 - m) * (gamma_x * x+ (1 - gamma_x) * self.x_mean)
 
 
             #(6)

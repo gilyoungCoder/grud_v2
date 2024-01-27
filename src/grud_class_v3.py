@@ -167,7 +167,7 @@ def main(learning_rate, learning_rate_decay, n_epochs, n_layers, dropout):
             # every [decay_step] epoch reduce the learning rate by half
             if  epoch % learning_rate_decay == 0:
                 learning_rate = learning_rate/2
-                optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+                optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1.0)
                 print('at epoch {} learning_rate is updated to {}'.format(epoch, learning_rate))
         
         # train the model
