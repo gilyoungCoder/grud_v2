@@ -75,7 +75,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 
-def main(learning_rate, learning_rate_decay, n_epochs, n_layers):
+def main(learning_rate, learning_rate_decay, n_epochs, n_layers, dropout):
     # def df_to_x_m_d(df, inputdict, mean, std, size, id_posistion, split):
     size = n_layers # steps ~ from the paper
     id_posistion = 37
@@ -145,12 +145,11 @@ def main(learning_rate, learning_rate_decay, n_epochs, n_layers):
     num_layers = n_layers # num of step or layers base on the paper
     print("checkpoint")
     #dropout_type : Moon, Gal, mloss
-    model = GRUD(input_size = input_size, hidden_size= hidden_size, output_size=output_size, dropout=0, dropout_type='mloss', x_mean=x_mean, num_layers=num_layers, device = device)
+    model = GRUD(input_size = input_size, hidden_size= hidden_size, output_size=output_size, dropout=dropout, dropout_type='mloss', x_mean=x_mean, num_layers=num_layers, device = device).to(device)
     # load the parameters
     # model.load_state_dict(torch.load('./save/grud_para.pt'))
     # model.eval()
     count = utils_v1.count_parameters(model)
-    model = model.to(device)
 
 
     criterion = torch.nn.BCELoss()
@@ -210,7 +209,7 @@ def main(learning_rate, learning_rate_decay, n_epochs, n_layers):
             #     label.append(label_i.item())
             # label.append(train_label.item())
             # y_pred_col += y_pred.tolist()
-            pred += (y_pred > 0.5).tolist()
+            pred += (y_pred).tolist()
             label += train_label.tolist()
             
             #print('y_pred: {}\t label: {}'.format(y_pred, train_label))
@@ -366,8 +365,9 @@ if __name__ == "__main__":
     parser.add_argument("--lrd", type=int, default=10, help="Learning rate decay")
     parser.add_argument("--n_epochs", type=int, default=70, help="Number of epochs")
     parser.add_argument("--n_layers", type=int, default=49, help="Number of epochs")
+    parser.add_argument("--dropout", type=int, default=0, help="Number of epochs")
 
     args = parser.parse_args()
 
     # main 함수에 인수 전달
-    main(args.lr, args.lrd, args.n_epochs, args.n_layers)
+    main(args.lr, args.lrd, args.n_epochs, args.n_layers, args.dropout)
