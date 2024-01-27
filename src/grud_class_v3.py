@@ -75,7 +75,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 
-def main(learning_rate, learning_rate_decay, n_epochs, n_layers, dropout):
+def main(learning_rate, learning_rate_decay, n_epochs, n_layers, dropout, weight_decay):
     # def df_to_x_m_d(df, inputdict, mean, std, size, id_posistion, split):
     size = n_layers # steps ~ from the paper
     id_posistion = 37
@@ -167,7 +167,7 @@ def main(learning_rate, learning_rate_decay, n_epochs, n_layers, dropout):
             # every [decay_step] epoch reduce the learning rate by half
             if  epoch % learning_rate_decay == 0:
                 learning_rate = learning_rate/2
-                optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1.0)
+                optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
                 print('at epoch {} learning_rate is updated to {}'.format(epoch, learning_rate))
         
         # train the model
@@ -366,8 +366,10 @@ if __name__ == "__main__":
     parser.add_argument("--n_epochs", type=int, default=70, help="Number of epochs")
     parser.add_argument("--n_layers", type=int, default=49, help="Number of epochs")
     parser.add_argument("--dropout", type=float, default=0, help="Number of epochs")
+    parser.add_argument("--wd", type=float, default=0, help="Number of epochs")
+
 
     args = parser.parse_args()
 
     # main 함수에 인수 전달
-    main(args.lr, args.lrd, args.n_epochs, args.n_layers, args.dropout)
+    main(args.lr, args.lrd, args.n_epochs, args.n_layers, args.dropout, args.wd)
